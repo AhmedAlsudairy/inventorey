@@ -82,42 +82,36 @@ export default async function DashboardPage() {
         uniqueProductCount: 0,
         warehousesWithInventory: 0
       };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Welcome to the Inventory Management System dashboard.
-        </p>
-      </div>
+        </p>      </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         {summaryCards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+          <Card key={card.title}>            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">
                 {card.title}
               </CardTitle>
               <div className={`rounded-full p-2 ${card.color}`}>
                 <card.icon className="h-4 w-4 text-white" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{card.value}</div>
-              <p className="text-xs text-muted-foreground">
+            </CardHeader>            <CardContent>
+              <div className="text-xl sm:text-2xl font-bold">{card.value}</div>
+              <p className="text-xs text-muted-foreground leading-tight">
                 {card.description}
               </p>
-            </CardContent>
-          </Card>
-        ))}
+            </CardContent></Card>        ))}
       </div>
       
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-3">
         <InventoryMetricsWidget metrics={inventoryMetrics} />
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <RecentActivityWidget activities={recentActivities} />
         <LowStockWidget products={lowStockProducts} />
       </div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function LowStockWidget({ products }: { products: LowStockProductType[] }) {
   return (
-    <Card>
+    <Card className="col-span-1">
       <CardHeader>
         <CardTitle className="flex items-center">
           <AlertTriangle className="mr-2 h-5 w-5 text-amber-500" />
@@ -34,11 +34,10 @@ export function LowStockWidget({ products }: { products: LowStockProductType[] }
               }
               
               return (
-                <li key={product.id} className="space-y-2">
-                  <div className="flex justify-between items-center">
+                <li key={product.id} className="space-y-2">                  <div className="flex justify-between items-center">
                     <Link 
                       href={`/dashboard/products/${product.id}`}
-                      className="text-sm font-medium hover:underline"
+                      className="text-sm font-medium hover:underline truncate max-w-[60%]"
                     >
                       {product.name}
                     </Link>

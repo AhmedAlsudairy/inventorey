@@ -35,7 +35,7 @@ const getTransactionDescription = (activity: RecentActivityType) => {
 
 export function RecentActivityWidget({ activities }: { activities: RecentActivityType[] }) {
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-1 lg:col-span-2">
       <CardHeader>
         <CardTitle className="flex items-center">
           <Activity className="mr-2 h-5 w-5" />
@@ -53,17 +53,16 @@ export function RecentActivityWidget({ activities }: { activities: RecentActivit
               <li key={activity.id} className="flex items-start">
                 <div className="bg-muted p-2 rounded-full mr-3 mt-0.5">
                   {getTransactionIcon(activity.transactionType)}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <p className="text-sm font-medium">
+                </div>                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium line-clamp-2">
                     {getTransactionDescription(activity)}
                   </p>
-                  <div className="flex items-center text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center text-xs text-muted-foreground">
                     <span>
                       {format(new Date(activity.timestamp), 'MMM d, yyyy HH:mm')}
                     </span>
-                    <span className="mx-2">•</span>
-                    <span>{activity.reason || 'No reason provided'}</span>
+                    <span className="mx-2 hidden sm:inline">•</span>
+                    <span className="w-full sm:w-auto mt-1 sm:mt-0">{activity.reason || 'No reason provided'}</span>
                   </div>
                 </div>
               </li>
