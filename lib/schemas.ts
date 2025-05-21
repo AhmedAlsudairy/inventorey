@@ -17,9 +17,9 @@ export const rackSchema = z.object({
   location: z.string().min(1, "Location is required"),
   numShelves: z.number().min(1, "Number of shelves is required"),
   dimensions: z.object({
-    height: z.number(),
-    width: z.number(),
-    depth: z.number(),
+    height: z.number().optional(),
+    width: z.number().optional(),
+    depth: z.number().optional(),
   }),
   status: z.number(),
 });

@@ -46,16 +46,15 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
   const defaultValues: RackFormValues = initialData
     ? {
         ...initialData,
-      }
-    : {
+      }    : {
         warehouseId: defaultWarehouseId || 0,
         rackCode: "",
         location: "",
         numShelves: 1,
         dimensions: {
-          height: 0,
-          width: 0,
-          depth: 0,
+          height: undefined,
+          width: undefined,
+          depth: undefined,
         },
         status: 1,
       };
@@ -66,7 +65,6 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
   });
 
   const { isSubmitting } = form.formState;
-
   const onSubmit = async (values: RackFormValues) => {
     try {
       const formData = new FormData();
@@ -74,9 +72,18 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
       formData.append("rackCode", values.rackCode);
       formData.append("location", values.location);
       formData.append("numShelves", values.numShelves.toString());
-      formData.append("height", values.dimensions.height.toString());
-      formData.append("width", values.dimensions.width.toString());
-      formData.append("depth", values.dimensions.depth.toString());
+      
+      // Only include dimensions that are provided (not undefined/null)
+      if (values.dimensions.height !== undefined && values.dimensions.height !== null) {
+        formData.append("height", values.dimensions.height.toString());
+      }
+      if (values.dimensions.width !== undefined && values.dimensions.width !== null) {
+        formData.append("width", values.dimensions.width.toString());
+      }
+      if (values.dimensions.depth !== undefined && values.dimensions.depth !== null) {
+        formData.append("depth", values.dimensions.depth.toString());
+      }
+      
       formData.append("status", values.status.toString());
 
       let result;
@@ -193,14 +200,12 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
                 <FormMessage />
               </FormItem>
             )}
-          />
-
-          <FormField
+          />          <FormField
             control={form.control}
             name="dimensions.height"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Height (cm)</FormLabel>
+                <FormLabel>Height (cm) - Optional</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -208,20 +213,22 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
                     step={0.01}
                     disabled={isSubmitting}
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => {
+                      const value = e.target.value.trim() === "" ? undefined : Number(e.target.value);
+                      field.onChange(value);
+                    }}
+                    value={field.value === undefined || field.value === null ? "" : field.value}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
-
-          <FormField
+          />          <FormField
             control={form.control}
             name="dimensions.width"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Width (cm)</FormLabel>
+                <FormLabel>Width (cm) - Optional</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -229,20 +236,22 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
                     step={0.01}
                     disabled={isSubmitting}
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => {
+                      const value = e.target.value.trim() === "" ? undefined : Number(e.target.value);
+                      field.onChange(value);
+                    }}
+                    value={field.value === undefined || field.value === null ? "" : field.value}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          />
-
-          <FormField
+          />          <FormField
             control={form.control}
             name="dimensions.depth"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Depth (cm)</FormLabel>
+                <FormLabel>Depth (cm) - Optional</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -250,7 +259,11 @@ export function RackForm({ warehouses, initialData, defaultWarehouseId }: RackFo
                     step={0.01}
                     disabled={isSubmitting}
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    onChange={(e) => {
+                      const value = e.target.value.trim() === "" ? undefined : Number(e.target.value);
+                      field.onChange(value);
+                    }}
+                    value={field.value === undefined || field.value === null ? "" : field.value}
                   />
                 </FormControl>
                 <FormMessage />

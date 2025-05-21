@@ -11,17 +11,17 @@ export async function createRack(formData: FormData) {
   if (!userId) {
     throw new Error("Not authenticated");
   }
-
   // Validate the input
   const warehouseId = Number(formData.get('warehouseId'));
   if (!warehouseId) {
     throw new Error("Warehouse ID is required");
   }
 
+  // Extract dimensions, handling optional values
   const dimensions = {
-    height: Number(formData.get('height')),
-    width: Number(formData.get('width')),
-    depth: Number(formData.get('depth')),
+    height: formData.has('height') ? Number(formData.get('height')) : undefined,
+    width: formData.has('width') ? Number(formData.get('width')) : undefined,
+    depth: formData.has('depth') ? Number(formData.get('depth')) : undefined,
   };
 
   const validated = rackSchema.parse({
@@ -119,11 +119,10 @@ export async function updateRack(id: number, formData: FormData) {
   if (!userId) {
     throw new Error("Not authenticated");
   }
-
   const dimensions = {
-    height: Number(formData.get('height')),
-    width: Number(formData.get('width')),
-    depth: Number(formData.get('depth')),
+    height: formData.has('height') ? Number(formData.get('height')) : undefined,
+    width: formData.has('width') ? Number(formData.get('width')) : undefined,
+    depth: formData.has('depth') ? Number(formData.get('depth')) : undefined,
   };
 
   const validated = rackSchema.parse({
