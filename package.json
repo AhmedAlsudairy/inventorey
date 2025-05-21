@@ -4,15 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate:dev": "prisma migrate dev",
-    "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate:dev": "npx prisma migrate dev",
+    "prisma:migrate:deploy": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio",
     "vercel-build": "node scripts/react-compatibility-fix.js && node scripts/vercel-prisma-setup.js && next build",
-    "postinstall": "prisma generate"
+    "postinstall": "node scripts/vercel-env-setup.js && npx prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.19.5",

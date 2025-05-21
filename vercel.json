@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run vercel-build",
   "outputDirectory": ".next",
-  "installCommand": "npm install --force",
+  "installCommand": "npm install --force && npm install -g prisma",
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
