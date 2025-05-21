@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { deleteInventory } from '@/app/actions/inventory/deleteInventory';
+import { deleteInventory } from '@/app/actions/inventory';
+import { getInventoryDetail } from '@/app/actions/inventory';
 import { getInventoryItem } from '@/app/actions/inventory/getInventoryItem';
 
 interface InventoryItemDetail {
