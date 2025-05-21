@@ -11,7 +11,7 @@
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "vercel-build": "node scripts/vercel-prisma-setup.js && next build",
+    "vercel-build": "node scripts/react-compatibility-fix.js && node scripts/vercel-prisma-setup.js && next build",
     "postinstall": "prisma generate"
   },
   "dependencies": {
