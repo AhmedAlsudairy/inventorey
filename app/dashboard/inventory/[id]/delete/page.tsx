@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { deleteInventory } from '@/app/actions/inventory';
+import { deleteInventory } from '@/app/actions/inventory/deleteInventory';
 import { getInventoryItem } from '@/app/actions/inventory/getInventoryItem';
 
 interface InventoryItemDetail {
@@ -48,7 +48,8 @@ interface InventoryItemDetail {
   }>;
 }
 
-export default function DeleteInventoryPage() {  const router = useRouter();
+export default function DeleteInventoryPage() {  
+  const router = useRouter();
   const params = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
