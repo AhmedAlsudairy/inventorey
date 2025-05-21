@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["metrics"]
+  // Adding "rhel-openssl-1.0.x" for Vercel compatibility
+  binaryTargets = ["native", "windows", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Enable connection pooling for production
+  relationMode = "foreignKeys"
+}
+
+model Warehouse {
+  id       Int     @id @default(autoincrement())
+  name     String
+  location String
+  status   String
+  racks    Rack[]
+  
+  @@map("warehouse")
+}
+
+model Rack {
+  id          Int      @id @default(autoincrement())
+  warehouseId Int      @map("warehouse_id")
+  rackCode    String   @map("rack_code")
+  location    String
+  numShelves  Int      @map("num_shelves")
+  dimensions  Json     // Stores height, width, depth as JSON
+  status      Int
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  shelves     Shelf[]
+  
+  @@map("rack")
+}
+
+model Shelf {
+  id         Int         @id @default(autoincrement())
+  rackId     Int         @map("rack_id")
+  shelfCode  String      @map("shelf_code")
+  position   String
+  dimensions Json        // Stores height, width, depth as JSON
+  capacityKg Float       @map("capacity_kg")
+  status     Int
+  rack       Rack        @relation(fields: [rackId], references: [id])
+  inventory  Inventory[]
+  
+  @@map("shelf")
+}
+
+model Category {
+  id           Int        @id @default(autoincrement())
+  name         String
+  description  String?
+  parentId     Int?       @map("parent_id")
+  active       Boolean    @default(true)
+  parent       Category?  @relation("CategoryToSubcategory", fields: [parentId], references: [id])
+  subcategories Category[] @relation("CategoryToSubcategory")
+  products     Product[]
+  
+  @@map("category")
+}
+
+model StatusType {
+  id         Int       @id @default(autoincrement())
+  code       String
+  name       String
+  entityType String    @map("entity_type")
+  products   Product[]
+  
+  @@map("status_type")
+}
+
+model Product {
+  id            Int        @id @default(autoincrement())
+  name          String
+  description   String?
+  documentNo    String?    @map("document_no")
+  sku           String     @unique
+  categoryId    Int        @map("category_id")
+  productType   String     @map("product_type")
+  primaryUnit   String     @map("primary_unit")
+  dimensions    Json?      // Stores length, width, height, weight, volume as JSON
+  specifications Json?      // Stores free-form specs as JSON
+  statusId      Int        @map("status_id")
+  createdAt     DateTime   @map("created_at") @default(now())
+  category      Category   @relation(fields: [categoryId], references: [id])
+  status        StatusType @relation(fields: [statusId], references: [id])
+  inventory     Inventory[]
+  
+  @@map("product")
+}
+
+model Inventory {
+  id            Int      @id @default(autoincrement())
+  productId     Int      @map("product_id")
+  shelfId       Int      @map("shelf_id")
+  quantity      Float
+  unit          String
+  batchNumber   String?  @map("batch_number")
+  expiryDate    DateTime? @map("expiry_date")
+  product       Product  @relation(fields: [productId], references: [id])
+  shelf         Shelf    @relation(fields: [shelfId], references: [id])
+  transactions  InventoryTransaction[]
+  
+  @@map("inventory")
+}
+
+model InventoryTransaction {
+  id                Int       @id @default(autoincrement())
+  inventoryId       Int       @map("inventory_id")
+  transactionType   String    @map("transaction_type")
+  quantityBefore    Float     @map("quantity_before")
+  quantityChange    Float     @map("quantity_change")
+  quantityAfter     Float     @map("quantity_after")
+  unit              String
+  reason            String?
+  documentReference String?   @map("document_reference")
+  userId            String    @map("user_id")
+  timestamp         DateTime  @default(now())
+  inventory         Inventory @relation(fields: [inventoryId], references: [id])
+  
+  @@map("inventory_transaction")
+}

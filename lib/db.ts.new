@@ -1,0 +1,45 @@
+// lib/db.ts
+import { PrismaClient } from '@prisma/client';
+
+// Prevent multiple instances of Prisma Client in development
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+// Connection management for Vercel serverless functions
+const connectionLimit = process.env.DATABASE_CONNECTION_LIMIT 
+  ? parseInt(process.env.DATABASE_CONNECTION_LIMIT) 
+  : 10;
+
+const connectionTimeout = process.env.DATABASE_POOL_TIMEOUT 
+  ? parseInt(process.env.DATABASE_POOL_TIMEOUT) * 1000
+  : 30000;
+
+export const db =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    // Optimized connection pooling for Vercel serverless environment
+    ...(process.env.NODE_ENV === 'production' && {
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+    }),
+  });
+
+// Ensure the client is reused in development
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
+
+// Handle connection issues gracefully
+process.on('beforeExit', async () => {
+  await db.$disconnect();
+});
+
+// Handle any uncaught errors to ensure connections are properly closed
+process.on('uncaughtException', async (e) => {
+  console.error('Uncaught exception:', e);
+  await db.$disconnect();
+  process.exit(1);
+});

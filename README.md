@@ -31,6 +31,47 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This application is optimized for direct deployment on Vercel. Follow these steps for deployment:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1. Database Setup
+
+Before deploying to Vercel, set up a PostgreSQL database. You can use:
+- [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
+- [Supabase](https://supabase.com/)
+- [Railway](https://railway.app/)
+- [Neon](https://neon.tech/)
+
+Once you have your database URL, add it to your Vercel project environment variables.
+
+### 2. Deploy to Vercel
+
+1. Push your code to GitHub, GitLab, or Bitbucket
+2. Connect your repository to Vercel
+3. Set the following environment variables in your Vercel project settings:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Your Clerk public key
+   - `CLERK_SECRET_KEY`: Your Clerk secret key
+   - `DATABASE_CONNECTION_LIMIT`: Recommended value is 5 for Vercel Serverless
+   - `DATABASE_POOL_TIMEOUT`: Recommended value is 30 (seconds)
+
+4. Deploy your application
+
+### 3. Run Migrations
+
+After your first deployment, you need to run database migrations:
+
+```bash
+# Install Vercel CLI if you haven't already
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Pull environment variables to your local environment
+vercel env pull .env.production
+
+# Run migrations
+npx prisma migrate deploy
+```
+
+That's it! Your inventory management application should now be live on Vercel with a properly configured database.
