@@ -102,41 +102,56 @@ export function ShelfTable({
   };
 
   return (
-    <>
-      <div className="rounded-md border">
+    <>      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Shelf Code</TableHead>
-              <TableHead>Position</TableHead>
-              {showRack && <TableHead>Rack</TableHead>}
-              {showWarehouse && <TableHead>Warehouse</TableHead>}
-              <TableHead>Capacity (kg)</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="whitespace-nowrap">Shelf Code</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Position</TableHead>
+              {showRack && <TableHead className="whitespace-nowrap hidden md:table-cell">Rack</TableHead>}
+              {showWarehouse && <TableHead className="whitespace-nowrap hidden md:table-cell">Warehouse</TableHead>}
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Capacity</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Status</TableHead>
+              <TableHead className="w-[80px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {shelves.length === 0 ? (
-              <TableRow>
-                <TableCell
+              <TableRow>                <TableCell
                   colSpan={showWarehouse ? (showRack ? 7 : 6) : (showRack ? 6 : 5)}
-                  className="text-center h-24 text-muted-foreground"
+                  className="text-center h-16 sm:h-24 p-2 sm:p-4 text-muted-foreground"
                 >
                   No shelves found
                 </TableCell>
               </TableRow>
             ) : (
-              shelves.map((shelf) => (
-                <TableRow key={shelf.id}>
-                  <TableCell className="font-medium">
-                    <Link href={`/dashboard/shelves/${shelf.id}`} className="hover:underline">
-                      {shelf.shelfCode}
-                    </Link>
+              shelves.map((shelf) => (                <TableRow key={shelf.id}>
+                  <TableCell className="font-medium p-2 sm:p-4">
+                    <div className="flex flex-col">
+                      <Link href={`/dashboard/shelves/${shelf.id}`} className="hover:underline line-clamp-1">
+                        {shelf.shelfCode}
+                      </Link>
+                      <span className="text-xs text-muted-foreground mt-1 sm:hidden">
+                        Position: {shelf.position}
+                      </span>
+                      {showRack && (
+                        <span className="text-xs text-muted-foreground mt-0.5 md:hidden">
+                          Rack: {shelf.rack.rackCode}
+                        </span>
+                      )}
+                      {showWarehouse && (
+                        <span className="text-xs text-muted-foreground mt-0.5 md:hidden">
+                          {shelf.rack.warehouse.name}
+                        </span>
+                      )}
+                      <span className="text-xs text-muted-foreground mt-0.5 sm:hidden">
+                        Capacity: {shelf.capacityKg} kg
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell>{shelf.position}</TableCell>
+                  <TableCell className="hidden sm:table-cell p-2 sm:p-4">{shelf.position}</TableCell>
                   {showRack && (
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell p-2 sm:p-4">
                       <Link
                         href={`/dashboard/racks/${shelf.rackId}`}
                         className="hover:underline"
@@ -146,7 +161,7 @@ export function ShelfTable({
                     </TableCell>
                   )}
                   {showWarehouse && (
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell p-2 sm:p-4">
                       <Link
                         href={`/dashboard/warehouses/${shelf.rack.warehouseId}`}
                         className="hover:underline"
@@ -155,8 +170,8 @@ export function ShelfTable({
                       </Link>
                     </TableCell>
                   )}
-                  <TableCell>{shelf.capacityKg}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell p-2 sm:p-4">{shelf.capacityKg} kg</TableCell>
+                  <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                     <span
                       className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusBadgeClass(
                         shelf.status
@@ -164,16 +179,16 @@ export function ShelfTable({
                     >
                       {getStatusText(shelf.status)}
                     </span>
-                  </TableCell>                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" asChild>
+                  </TableCell>
+                  <TableCell className="p-2 sm:p-4">                    <div className="flex gap-1 sm:gap-2">
+                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs sm:text-sm" asChild>
                         <Link href={`/dashboard/shelves/${shelf.id}/edit`}>Edit</Link>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteClick(shelf)}
-                        className="text-red-600 hover:bg-red-100 hover:text-red-700"
+                        className="h-8 px-2 text-xs sm:text-sm text-red-600 hover:bg-red-100 hover:text-red-700"
                       >
                         Delete
                       </Button>
@@ -184,10 +199,8 @@ export function ShelfTable({
             )}
           </TableBody>
         </Table>
-      </div>
-
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+      </div>      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-md mx-auto">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>

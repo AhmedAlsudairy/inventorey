@@ -273,12 +273,17 @@ export async function deleteProduct(formData: FormData) {
         error: `Cannot delete product. It has ${inventoryCount} inventory records.` 
       };
     }
-    
-    await db.product.delete({
-      where: { id },
+      // Use a transaction to ensure atomicity
+    await db.$transaction(async (tx) => {
+      // Delete the product
+      await tx.product.delete({
+        where: { id },
+      });
     });
     
+    // Revalidate both the products list and product detail pages
     revalidatePath('/dashboard/products');
+    revalidatePath(`/dashboard/products/${id}`);
     return { success: true };
   } catch (error) {
     console.error('Failed to delete product:', error);

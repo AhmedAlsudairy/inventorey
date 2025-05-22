@@ -24,6 +24,7 @@ import {
 import { Edit, Eye, MoreHorizontal, PackageOpen, Search, Trash2 } from 'lucide-react'
 import { deleteInventory } from '@/app/actions/inventory/deleteInventory'
 import { DeleteInventoryModal } from './DeleteInventoryModal'
+import { toast } from 'sonner'
 
 interface Inventory {  id: number;
   quantity: number;
@@ -60,12 +61,12 @@ interface InventoryTableProps {
   inventory: Inventory[]
 }
 
-export default function InventoryTable({ inventory }: InventoryTableProps) {
-  const router = useRouter()
+export default function InventoryTable({ inventory }: InventoryTableProps) {  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   // Add state for delete dialog
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [inventoryToDelete, setInventoryToDelete] = useState<{ id: number, productName: string } | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   const filteredInventory = searchQuery
     ? inventory.filter(item => 
@@ -82,15 +83,43 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
     setInventoryToDelete({ id, productName })
     setDeleteDialogOpen(true)
   }
-
+  
   const handleDeleteInventory = async (id: number) => {
-    const result = await deleteInventory(id)
-    if (result.success) {
-      router.refresh()
-    } else {
-      console.error("Failed to delete inventory:", result.error)
-      // You could add toast notifications here
+    try {
+      setIsDeleting(true)
+      const result = await deleteInventory(id)
+      if (result.success) {
+        // Close the dialog first
+        setDeleteDialogOpen(false)
+        // Reset the inventory to delete
+        setInventoryToDelete(null)
+        // Show success toast
+        toast.success("Inventory deleted successfully")
+        // Force a complete refresh of the inventory data
+        refreshData()
+      } else {
+        const errorMessage = 'error' in result ? result.error : 'Unknown error'
+        console.error("Failed to delete inventory:", errorMessage)
+        toast.error(`Failed to delete inventory: ${errorMessage}`)
+      }
+    } catch (error) {
+      console.error("Error deleting inventory:", error)
+      toast.error("An unexpected error occurred while deleting inventory")
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  // This helps ensure the page is properly revalidated after deletion
+  const refreshData = () => {
+    // Use router.refresh() to update server components
+    router.refresh()
+    
+    // Optional: Add a slight delay to ensure revalidation is complete
+    setTimeout(() => {
+      // This is a fallback to ensure the UI is updated if router.refresh() isn't enough
+      window.location.href = window.location.href
+    }, 100)
   }
 
   const formatDate = (date: Date | null) => {
@@ -113,28 +142,27 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
   }
 
   return (
-    <>
-      <div className="flex items-center justify-between py-4">
-        <div className="flex items-center relative">
+    <>      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 gap-2 sm:gap-0">
+        <div className="flex items-center relative w-full sm:w-auto">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search inventory..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="pl-9 max-w-sm"
+            className="pl-9 w-full sm:max-w-sm"
           />
-        </div>      </div>
-      <div className="rounded-md border">
+        </div>
+      </div>      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Product Info</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Batch</TableHead>
-              <TableHead>Expiry</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-[80px]">Actions</TableHead>
+              <TableHead className="whitespace-nowrap">Product Info</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Location</TableHead>
+              <TableHead className="whitespace-nowrap">Quantity</TableHead>
+              <TableHead className="whitespace-nowrap hidden md:table-cell">Batch</TableHead>
+              <TableHead className="whitespace-nowrap hidden md:table-cell">Expiry</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Status</TableHead>
+              <TableHead className="w-[60px] sm:w-[80px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -142,11 +170,10 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
               filteredInventory.map(item => {
                 const status = getInventoryStatus(item)
                 
-                return (
-                  <TableRow key={item.id}>
-                    <TableCell>
+                return (                  <TableRow key={item.id}>
+                    <TableCell className="p-2 sm:p-4">
                       <div>
-                        <div className="font-medium">{item.product.name}</div>
+                        <div className="font-medium line-clamp-1">{item.product.name}</div>
                         <div className="flex items-center gap-2 mt-1 flex-wrap">
                           <span className="text-sm text-muted-foreground">{item.product.sku}</span>
                           <Badge variant="outline" className={item.product.productType === 'permanent' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}>
@@ -158,9 +185,12 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
                             </span>
                           )}
                         </div>
+                        <div className="text-xs text-muted-foreground mt-1 sm:hidden">
+                          {item.shelf.rack.warehouse.name} &gt; {item.shelf.rack.rackCode} &gt; {item.shelf.shelfCode}
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                       <div>
                         <div>{item.shelf.rack.warehouse.name}</div>
                         <div className="text-sm text-muted-foreground">
@@ -168,22 +198,24 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {item.quantity} {item.unit}
+                    <TableCell className="p-2 sm:p-4">
+                      <span className="whitespace-nowrap">
+                        {item.quantity} {item.unit}
+                      </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell p-2 sm:p-4">
                       {item.batchNumber || '-'}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell p-2 sm:p-4">
                       {formatDate(item.expiryDate)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                       <Badge variant={status.variant}>
                         {status.label}
                       </Badge>
-                    </TableCell>                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" asChild>
+                    </TableCell>
+                    <TableCell className="p-2 sm:p-4">                      <div className="flex gap-1 sm:gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                           <Link href={`/dashboard/inventory/${item.id}/edit`}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Edit</span>
@@ -192,19 +224,19 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          className="h-8 w-8 text-red-600 hover:bg-red-50"
                           onClick={() => openDeleteDialog(item.id, item.product.name)}
-                          className="text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreHorizontal className="h-4 w-4" />
                               <span className="sr-only">More actions</span>
                             </Button>
-                          </DropdownMenuTrigger><DropdownMenuContent align="end">
+                          </DropdownMenuTrigger><DropdownMenuContent align="end" className="w-[160px]">
                           <DropdownMenuItem onClick={() => router.push(`/dashboard/inventory/${item.id}`)}>
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
@@ -235,9 +267,8 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
                   </TableRow>
                 )
               })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+            ) : (              <TableRow>
+                <TableCell colSpan={7} className="h-16 sm:h-24 text-center p-2 sm:p-4">
                   {searchQuery
                     ? 'No inventory records match your search.'
                     : 'No inventory records have been added yet.'}
@@ -245,8 +276,7 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
               </TableRow>
             )}
           </TableBody>
-        </Table>
-      </div>      {inventoryToDelete && (
+        </Table>      </div>      {inventoryToDelete && (
         <DeleteInventoryModal
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
@@ -256,6 +286,7 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {
             }
           }}
           inventoryItem={inventoryToDelete}
+          isDeleting={isDeleting}
         />
       )}
     </>

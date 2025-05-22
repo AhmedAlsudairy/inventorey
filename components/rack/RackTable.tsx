@@ -89,40 +89,47 @@ export function RackTable({ racks, showWarehouse = false }: RackTableProps) {
   };
 
   return (
-    <>
-      <div className="rounded-md border">
+    <>      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Rack Code</TableHead>
-              <TableHead>Location</TableHead>
-              {showWarehouse && <TableHead>Warehouse</TableHead>}
-              <TableHead>Shelves</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="whitespace-nowrap">Rack Code</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Location</TableHead>
+              {showWarehouse && <TableHead className="whitespace-nowrap hidden md:table-cell">Warehouse</TableHead>}
+              <TableHead className="whitespace-nowrap">Shelves</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Status</TableHead>
+              <TableHead className="w-[80px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {racks.length === 0 ? (
-              <TableRow>
-                <TableCell
+              <TableRow>                <TableCell
                   colSpan={showWarehouse ? 6 : 5}
-                  className="text-center h-24 text-muted-foreground"
+                  className="text-center h-16 sm:h-24 p-2 sm:p-4 text-muted-foreground"
                 >
                   No racks found
                 </TableCell>
               </TableRow>
             ) : (
-              racks.map((rack) => (
-                <TableRow key={rack.id}>
-                  <TableCell className="font-medium">
-                    <Link href={`/dashboard/racks/${rack.id}`} className="hover:underline">
-                      {rack.rackCode}
-                    </Link>
+              racks.map((rack) => (                <TableRow key={rack.id}>
+                  <TableCell className="font-medium p-2 sm:p-4">
+                    <div className="flex flex-col">
+                      <Link href={`/dashboard/racks/${rack.id}`} className="hover:underline line-clamp-1">
+                        {rack.rackCode}
+                      </Link>
+                      <span className="text-xs text-muted-foreground mt-1 sm:hidden">
+                        Location: {rack.location}
+                      </span>
+                      {showWarehouse && (
+                        <span className="text-xs text-muted-foreground mt-0.5 md:hidden">
+                          {rack.warehouse.name}
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell>{rack.location}</TableCell>
+                  <TableCell className="hidden sm:table-cell p-2 sm:p-4">{rack.location}</TableCell>
                   {showWarehouse && (
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell p-2 sm:p-4">
                       <Link
                         href={`/dashboard/warehouses/${rack.warehouseId}`}
                         className="hover:underline"
@@ -131,8 +138,8 @@ export function RackTable({ racks, showWarehouse = false }: RackTableProps) {
                       </Link>
                     </TableCell>
                   )}
-                  <TableCell>{rack._count.shelves}</TableCell>
-                  <TableCell>
+                  <TableCell className="p-2 sm:p-4">{rack._count.shelves}</TableCell>
+                  <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                     <span
                       className={`inline-block px-2 py-1 rounded-full text-xs ${getStatusBadgeClass(
                         rack.status
@@ -140,16 +147,16 @@ export function RackTable({ racks, showWarehouse = false }: RackTableProps) {
                     >
                       {getStatusText(rack.status)}
                     </span>
-                  </TableCell>                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm" asChild>
+                  </TableCell>
+                  <TableCell className="p-2 sm:p-4">                    <div className="flex gap-1 sm:gap-2">
+                      <Button variant="ghost" size="sm" className="h-8 px-2 text-xs sm:text-sm" asChild>
                         <Link href={`/dashboard/racks/${rack.id}/edit`}>Edit</Link>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteClick(rack)}
-                        className="text-red-600 hover:bg-red-100 hover:text-red-700"
+                        className="h-8 px-2 text-xs sm:text-sm text-red-600 hover:bg-red-100 hover:text-red-700"
                       >
                         Delete
                       </Button>
@@ -162,8 +169,7 @@ export function RackTable({ racks, showWarehouse = false }: RackTableProps) {
         </Table>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>        <DialogContent className="max-w-md mx-auto">
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>

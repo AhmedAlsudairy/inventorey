@@ -98,7 +98,7 @@ export default function DeleteInventoryPage() {
         }
         router.refresh();
       } else {
-        throw new Error(result.error || "Failed to delete inventory");
+        throw new Error('error' in result ? result.error : "Failed to delete inventory");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete inventory");

@@ -30,32 +30,29 @@ export async function deleteInventory(inventoryId: number) {
         }
       }
     })
-
+    
     if (!inventory) {
       throw new Error('Inventory not found')
     }
 
-    // Create a record in the inventory transaction table to log the deletion
-    await db.inventoryTransaction.create({
-      data: {
-        inventoryId: inventoryId,
-        transactionType: 'DELETE',
-        quantityBefore: inventory.quantity,
-        quantityChange: -inventory.quantity, // Negative change to represent removal
-        quantityAfter: 0,
-        unit: inventory.unit,
-        reason: 'Inventory deleted',
-        userId: userId
-      }
-    })    // Delete the inventory record
-    await db.inventory.delete({
-      where: { id: inventoryId }
+    // Execute operations within a transaction to ensure atomicity
+    const result = await db.$transaction(async (tx) => {
+      // First, delete all transactions related to this inventory
+      await tx.inventoryTransaction.deleteMany({
+        where: { inventoryId: inventoryId }
+      });
+
+      // Then delete the inventory record itself
+      await tx.inventory.delete({
+        where: { id: inventoryId }
+      });
+
+      return { success: true };
     });
     
     // Revalidate all relevant paths
     revalidatePath('/dashboard/inventory');
-    
-    // If the inventory was on a shelf, revalidate those paths as well
+      // If the inventory was on a shelf, revalidate those paths as well
     if (inventory.shelf) {
       revalidatePath(`/dashboard/shelves/${inventory.shelf.id}`);
       revalidatePath(`/dashboard/racks/${inventory.shelf.rackId}`);
@@ -64,11 +61,11 @@ export async function deleteInventory(inventoryId: number) {
       }
     }
     
-    return { success: true }
+    return result;
   } catch (error: Error | unknown) {
     console.error('Error deleting inventory:', error)
     return { 
-      success: false, 
+      success: false,
       error: error instanceof Error ? error.message : 'Failed to delete inventory' 
     }
   }
