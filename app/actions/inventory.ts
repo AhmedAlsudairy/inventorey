@@ -12,16 +12,30 @@ export async function addInventory(formData: FormData) {
     throw new Error("Not authenticated");
   }
 
+  // Debug: Log the incoming FormData
+  console.log('AddInventory - FormData debug:', {
+    productId: formData.get('productId'),
+    shelfId: formData.get('shelfId'),
+    quantity: formData.get('quantity'),
+    unit: formData.get('unit'),
+    position: formData.get('position'),
+    batchNumber: formData.get('batchNumber'),
+    expiryDate: formData.get('expiryDate')
+  })
   const validated = inventorySchema.parse({
     productId: Number(formData.get('productId')),
     shelfId: Number(formData.get('shelfId')),
     quantity: Number(formData.get('quantity')),
     unit: formData.get('unit'),
+    position: Number(formData.get('position')) || 0,
     batchNumber: formData.get('batchNumber') || undefined,
     expiryDate: formData.get('expiryDate') 
       ? new Date(formData.get('expiryDate') as string) 
       : undefined,
   });
+
+  // Debug: Log the validated data
+  console.log('AddInventory - Validated data:', validated)
 
   try {
     // Check if there's existing inventory for this product on this shelf
@@ -62,18 +76,26 @@ export async function addInventory(formData: FormData) {
         },
       });
       
-    } else {
-      // Create new inventory record
+    } else {      // Create new inventory record
       inventoryRecord = await db.inventory.create({
         data: {
           productId: validated.productId,
           shelfId: validated.shelfId,
           quantity: validated.quantity,
           unit: validated.unit,
+          position: validated.position,
           batchNumber: validated.batchNumber,
           expiryDate: validated.expiryDate,
         },
       });
+
+      // Debug: Log the created inventory
+      console.log('AddInventory - Created inventory:', {
+        id: inventoryRecord.id,
+        position: inventoryRecord.position,
+        quantity: inventoryRecord.quantity,
+        unit: inventoryRecord.unit
+      })
       
       // Create transaction record for audit trail
       await db.inventoryTransaction.create({
@@ -517,6 +539,17 @@ export async function updateInventory(id: number, formData: FormData) {
     throw new Error("Not authenticated")
   }
 
+  // Debug: Log the incoming FormData
+  console.log('UpdateInventory (main) - FormData debug:', {
+    productId: formData.get('productId'),
+    shelfId: formData.get('shelfId'),
+    quantity: formData.get('quantity'),
+    unit: formData.get('unit'),
+    position: formData.get('position'),
+    batchNumber: formData.get('batchNumber'),
+    expiryDate: formData.get('expiryDate')
+  })
+
   try {
     // First, find the existing inventory item
     const existingInventory = await db.inventory.findUnique({
@@ -537,19 +570,21 @@ export async function updateInventory(id: number, formData: FormData) {
 
     if (!existingInventory) {
       return { success: false, error: "Inventory not found" }
-    }
-
-    // Validate form data
+    }    // Validate form data
     const validated = inventorySchema.parse({
       productId: Number(formData.get('productId')),
       shelfId: Number(formData.get('shelfId')),
       quantity: Number(formData.get('quantity')),
       unit: formData.get('unit'),
+      position: Number(formData.get('position')) || 0,
       batchNumber: formData.get('batchNumber') || undefined,
       expiryDate: formData.get('expiryDate') 
         ? new Date(formData.get('expiryDate') as string) 
         : undefined,
     })
+
+    // Debug: Log the validated data
+    console.log('UpdateInventory (main) - Validated data:', validated)
 
     // Calculate the quantity change for the transaction record
     const quantityChange = validated.quantity - existingInventory.quantity
@@ -567,9 +602,7 @@ export async function updateInventory(id: number, formData: FormData) {
         documentReference: formData.get('documentReference')?.toString() || null,
         userId: userId,
       }
-    })
-
-    // Then update the inventory record
+    })    // Then update the inventory record
     await db.inventory.update({
       where: { id },
       data: {
@@ -577,6 +610,7 @@ export async function updateInventory(id: number, formData: FormData) {
         shelfId: validated.shelfId,
         quantity: validated.quantity,
         unit: validated.unit,
+        position: validated.position,
         batchNumber: validated.batchNumber || null,
         expiryDate: validated.expiryDate || null,
       }

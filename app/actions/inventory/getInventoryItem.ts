@@ -43,6 +43,14 @@ export async function getInventoryItem(id: number) {
         }
       }
     })
+
+    // Debug: Log the retrieved inventory position
+    console.log('GetInventoryItem - Retrieved inventory:', {
+      id: inventory?.id,
+      position: inventory?.position,
+      quantity: inventory?.quantity,
+      unit: inventory?.unit
+    })
     
     return inventory
   } catch (error) {

@@ -68,6 +68,7 @@ interface InventoryItem {
   quantity: number
   unit: string
   shelfId: number
+  position?: number
   expiryDate?: string | Date | null
   batchNumber?: string | null
   product: Product
@@ -101,10 +102,11 @@ export default function InventoryForm({
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  
-  // Modal state
+    // Modal state
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
-  const [currentProducts, setCurrentProducts] = useState<Product[]>(products)// Initialize state with values from initialData if in edit mode
+  const [currentProducts, setCurrentProducts] = useState<Product[]>(products)
+  
+  // Initialize state with values from initialData if in edit mode
   const [selectedProduct, setSelectedProduct] = useState<string>(
     isEditing && initialData ? String(initialData.productId) : ''
   )
@@ -120,6 +122,40 @@ export default function InventoryForm({
   const [selectedUnit, setSelectedUnit] = useState<string>(
     isEditing && initialData ? initialData.unit : ''
   )
+  const [position, setPosition] = useState<number>(
+    isEditing && initialData ? initialData.position || 0 : 0
+  )
+
+  // Debug: Log initial data and position
+  useEffect(() => {
+    console.log('InventoryForm - Initial data debug:', {
+      isEditing,
+      initialDataPosition: initialData?.position,
+      positionState: position,
+      initialData: initialData ? {
+        id: initialData.id,
+        position: initialData.position,
+        quantity: initialData.quantity,
+        unit: initialData.unit
+      } : null
+    })
+  }, [isEditing, initialData, position])
+  
+  // Debug: Log position state changes
+  useEffect(() => {
+    console.log('Position state changed:', position)
+  }, [position])
+  
+  // Debug: Log initial data on mount
+  useEffect(() => {
+    if (isEditing && initialData) {
+      console.log('Initial data in edit mode:', {
+        position: initialData.position,
+        productId: initialData.productId,
+        unit: initialData.unit
+      })
+    }
+  }, [isEditing, initialData])
   
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(() => {
     if (isEditing && initialData && initialData.expiryDate) {
@@ -263,12 +299,17 @@ export default function InventoryForm({
     if (selectedProduct) {
       const product = currentProducts.find(p => p.id === Number(selectedProduct))
       if (product) {
-        setSelectedUnit(product.primaryUnit)
+        // In edit mode, preserve the existing unit from initialData unless the product changes
+        if (isEditing && initialData && Number(selectedProduct) === initialData.productId && initialData.unit) {
+          setSelectedUnit(initialData.unit)
+        } else {
+          setSelectedUnit(product.primaryUnit)
+        }
       }
     } else {
       setSelectedUnit('')
     }
-  }, [selectedProduct, currentProducts])
+  }, [selectedProduct, currentProducts, isEditing, initialData])
     // Pre-select the product when initialData is loaded
   useEffect(() => {
     if (isEditing && initialData && selectedProduct) {
@@ -319,17 +360,20 @@ export default function InventoryForm({
       return
     }
       const formData = new FormData(event.currentTarget)
-    
-    // Debug logging
+      // Debug logging
     console.log('Form submission debug:', {
       selectedProduct,
       selectedUnit,
-      unitFromForm: formData.get('unit')
+      position,
+      unitFromForm: formData.get('unit'),
+      positionFromForm: formData.get('position')
     })
     
     // Debug logging
     console.log('Form data - selectedUnit:', selectedUnit)
     console.log('Form data - unit field:', formData.get('unit'))
+      // Set position value from state
+    formData.set('position', position.toString())
     
     if (expiryDate) {
       formData.set('expiryDate', expiryDate.toISOString().split('T')[0])
@@ -337,13 +381,16 @@ export default function InventoryForm({
     
     try {
       let result;
-      
-      if (isEditing && initialData) {
+        if (isEditing && initialData) {
         // Update existing inventory
+        console.log('Calling updateInventory with ID:', initialData.id)
         result = await updateInventory(initialData.id, formData)
+        console.log('UpdateInventory result:', result)
       } else {
         // Create new inventory
+        console.log('Calling addInventory')
         result = await addInventory(formData)
+        console.log('AddInventory result:', result)
       }
         if (result.success) {
         setSuccess(true)
@@ -353,11 +400,11 @@ export default function InventoryForm({
           try {
             if (event.currentTarget && typeof event.currentTarget.reset === 'function') {
               event.currentTarget.reset()
-            }
-            setSelectedProduct('')
+            }            setSelectedProduct('')
             setSelectedWarehouse('')
             setSelectedRack('')
             setSelectedShelf('')
+            setPosition(0)
             setExpiryDate(undefined)
           } catch (err) {
             console.error('Form reset error:', err)
@@ -452,8 +499,7 @@ export default function InventoryForm({
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-                <div className="grid grid-cols-2 gap-4">
+              </div>                <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="quantity">Quantity*</Label>                <Input
                     id="quantity"
@@ -476,8 +522,7 @@ export default function InventoryForm({
                         console.log("Unit selected:", value);
                         setSelectedUnit(value);
                       }}
-                    >
-                      <SelectTrigger className="w-full">
+                    >                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select unit" />
                       </SelectTrigger>
                       <SelectContent>
@@ -497,6 +542,22 @@ export default function InventoryForm({
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                  <div>
+                  <Label htmlFor="position">Position</Label>
+                  <Input
+                    id="position"
+                    name="position"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Enter position number"                    value={position}
+                    onChange={(e) => {
+                      const newPosition = Number(e.target.value) || 0;
+                      console.log('Position input changed:', e.target.value, '-> parsed:', newPosition);
+                      setPosition(newPosition);
+                    }}
+                  />
                 </div>
               </div>
               

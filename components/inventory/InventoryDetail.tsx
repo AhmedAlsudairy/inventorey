@@ -36,6 +36,7 @@ interface InventoryDetailProps {
     shelfId: number
     quantity: number
     unit: string
+    position?: number
     batchNumber: string | null
     expiryDate: Date | null
     product: {
@@ -265,10 +266,14 @@ export default function InventoryDetail({ inventory }: InventoryDetailProps) {
                       className="text-blue-600 hover:text-blue-800 hover:underline text-lg font-medium"
                     >
                       {inventory.shelf.shelfCode}
-                    </Link>
-                    <div className="mt-2 bg-green-50 p-2 rounded-md">
+                    </Link>                    <div className="mt-2 bg-green-50 p-2 rounded-md">
                       <p className="text-sm font-medium text-green-800">
-                        📋 Position: <span className="font-semibold">{inventory.shelf.position}</span>
+                        📋 Shelf Position: <span className="font-semibold">{inventory.shelf.position}</span>
+                      </p>
+                    </div>
+                    <div className="mt-2 bg-orange-50 p-2 rounded-md">
+                      <p className="text-sm font-medium text-orange-800">
+                        📦 Item Position: <span className="font-semibold">#{inventory.position || 0}</span>
                       </p>
                     </div>
                   </div>
@@ -306,12 +311,16 @@ export default function InventoryDetail({ inventory }: InventoryDetailProps) {
             <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>Inventory Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              </CardHeader>              <CardContent className="space-y-2">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Quantity</p>
                     <p className="text-xl font-bold">{inventory.quantity} {inventory.unit}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Item Position</p>
+                    <p className="text-lg font-semibold text-blue-600">#{inventory.position || 0}</p>
                   </div>
                   
                   <div>

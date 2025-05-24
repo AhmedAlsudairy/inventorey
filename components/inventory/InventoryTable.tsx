@@ -26,11 +26,14 @@ import { deleteInventory } from '@/app/actions/inventory/deleteInventory'
 import { DeleteInventoryModal } from './DeleteInventoryModal'
 import { toast } from 'sonner'
 
-interface Inventory {  id: number;
+interface Inventory {
+  id: number;
   quantity: number;
   unit: string;
+  position: number;
   batchNumber: string | null;
-  expiryDate: Date | null;product: {
+  expiryDate: Date | null;
+  product: {
     id: number
     name: string
     sku: string
@@ -63,13 +66,15 @@ interface InventoryTableProps {
   inventory: Inventory[]
 }
 
-export default function InventoryTable({ inventory }: InventoryTableProps) {  const router = useRouter()
+export default function InventoryTable({ inventory }: InventoryTableProps) {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   // Add state for delete dialog
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [inventoryToDelete, setInventoryToDelete] = useState<{ id: number, productName: string } | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-    const filteredInventory = searchQuery
+  
+  const filteredInventory = searchQuery
     ? inventory.filter(item => 
         item.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.product.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -78,7 +83,8 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
         item.shelf.rack.rackCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.shelf.shelfCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.shelf.rack.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.shelf.position.toLowerCase().includes(searchQuery.toLowerCase())
+        item.shelf.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.position.toString().includes(searchQuery)
       )
     : inventory
 
@@ -211,13 +217,15 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
                             >
                               📚 {item.shelf.shelfCode}
                             </Link>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-1">
+                          </div>                          <div className="flex flex-wrap gap-1 mt-1">
                             <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">
                               📍 {item.shelf.rack.location}
                             </span>
                             <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">
-                              📋 {item.shelf.position}
+                              📋 Shelf: {item.shelf.position}
+                            </span>
+                            <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs">
+                              🔢 Item: {item.position}
                             </span>
                           </div>
                         </div>
@@ -245,13 +253,15 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
                           >
                             📚 {item.shelf.shelfCode}
                           </Link>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
+                        </div>                        <div className="flex flex-wrap gap-2">
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
                             📍 Location: {item.shelf.rack.location}
                           </span>
                           <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
-                            📋 Position: {item.shelf.position}
+                            📋 Shelf Position: {item.shelf.position}
+                          </span>
+                          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium">
+                            🔢 Item Position: {item.position}
                           </span>
                         </div>
                       </div>

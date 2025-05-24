@@ -10,8 +10,18 @@ export async function updateInventory(id: number, formData: FormData) {
   if (!userId) {
     throw new Error("Not authenticated")
   }
-
   try {
+    // Debug: Log the incoming FormData
+    console.log('UpdateInventory - FormData debug:', {
+      productId: formData.get('productId'),
+      shelfId: formData.get('shelfId'),
+      quantity: formData.get('quantity'),
+      unit: formData.get('unit'),
+      position: formData.get('position'),
+      batchNumber: formData.get('batchNumber'),
+      expiryDate: formData.get('expiryDate')
+    })
+
     // First, find the existing inventory item
     const existingInventory = await db.inventory.findUnique({
       where: { id },
@@ -31,19 +41,21 @@ export async function updateInventory(id: number, formData: FormData) {
 
     if (!existingInventory) {
       return { success: false, error: "Inventory not found" }
-    }
-
-    // Validate form data
+    }    // Validate form data
     const validated = inventorySchema.parse({
       productId: Number(formData.get('productId')),
       shelfId: Number(formData.get('shelfId')),
       quantity: Number(formData.get('quantity')),
       unit: formData.get('unit'),
+      position: Number(formData.get('position')) || 0,
       batchNumber: formData.get('batchNumber') || undefined,
       expiryDate: formData.get('expiryDate') 
         ? new Date(formData.get('expiryDate') as string) 
         : undefined,
     })
+
+    // Debug: Log the validated data
+    console.log('UpdateInventory - Validated data:', validated)
 
     // Calculate the quantity change for the transaction record
     const quantityChange = validated.quantity - existingInventory.quantity
@@ -61,18 +73,25 @@ export async function updateInventory(id: number, formData: FormData) {
         documentReference: formData.get('documentReference')?.toString() || null,
         userId: userId,
       }
-    })
-
-    // Then update the inventory record
-    await db.inventory.update({
+    })    // Then update the inventory record
+    const updatedInventory = await db.inventory.update({
       where: { id },
       data: {
         productId: validated.productId,
         shelfId: validated.shelfId,
         quantity: validated.quantity,
         unit: validated.unit,
+        position: validated.position,
         batchNumber: validated.batchNumber || null,
         expiryDate: validated.expiryDate || null,      }
+    })
+
+    // Debug: Log the updated inventory
+    console.log('UpdateInventory - Updated inventory:', {
+      id: updatedInventory.id,
+      position: updatedInventory.position,
+      quantity: updatedInventory.quantity,
+      unit: updatedInventory.unit
     })
 
     revalidatePath('/dashboard/inventory')

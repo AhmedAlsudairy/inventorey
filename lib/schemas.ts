@@ -83,6 +83,7 @@ export const inventorySchema = z.object({
   shelfId: z.number(),
   quantity: z.number().min(0, "Quantity must be non-negative"),
   unit: z.string().min(1, "Unit is required"),
+  position: z.number().min(0, "Position must be non-negative"),
   batchNumber: z.string().optional(),
   expiryDate: z.date().optional(),
 });
