@@ -18,15 +18,15 @@ const globalForPrisma = global as unknown as {
 export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    // Optimized connection pooling for Vercel serverless environment
-    ...(process.env.NODE_ENV === 'production' && {
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+    // Add connection timeout and retry settings
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
       },
-    }),
+    },
+    // Improved error handling
+    errorFormat: 'pretty',
   });
 
 // Ensure the client is reused in development

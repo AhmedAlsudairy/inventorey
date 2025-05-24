@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { getProducts } from '@/app/actions/product'
 import ProductTable from '@/components/product/ProductTable'
+import ProductFilters from '@/components/products/ProductFilters'
 import { Button } from '@/components/ui/button'
 import { Plus, Package } from 'lucide-react'
 
@@ -43,8 +44,9 @@ export default async function ProductsPage({
             <Plus className="mr-2 h-4 w-4" />
             New Product
           </Link>
-        </Button>
-      </div>
+        </Button>      </div>
+      
+      <ProductFilters />
       
       <Suspense fallback={<div className="py-8 text-center">Loading products...</div>}>
         {products.length === 0 ? (

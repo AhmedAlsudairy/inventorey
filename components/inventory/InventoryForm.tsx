@@ -18,14 +18,25 @@ import {
 } from '@/components/ui/select'
 import { DatePicker } from '@/components/ui/date-picker'
 import { addInventory, updateInventory } from '@/app/actions/inventory'
-import { AlertCircle, Check, Save, Search } from 'lucide-react'
+import { AlertCircle, Check, Save, Search, Plus } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import ProductModal from '../product/ProductModal'
 
 interface Product {
   id: number
   name: string
   sku: string
   primaryUnit: string
+}
+
+interface Category {
+  id: number
+  name: string
+}
+
+interface StatusType {
+  id: number
+  name: string
 }
 
 interface Warehouse {
@@ -44,6 +55,8 @@ interface Warehouse {
 interface InventoryFormProps {
   products: Product[]
   warehouses: Warehouse[]
+  categories: Category[]
+  statusTypes: StatusType[]
   initialProductId?: number
   initialData?: InventoryItem // For editing mode
   isEditing?: boolean
@@ -78,6 +91,8 @@ interface InventoryItem {
 export default function InventoryForm({ 
   products, 
   warehouses,
+  categories,
+  statusTypes,
   initialProductId,
   initialData,
   isEditing = false
@@ -85,7 +100,11 @@ export default function InventoryForm({
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)  // Initialize state with values from initialData if in edit mode
+  const [success, setSuccess] = useState(false)
+  
+  // Modal state
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const [currentProducts, setCurrentProducts] = useState<Product[]>(products)// Initialize state with values from initialData if in edit mode
   const [selectedProduct, setSelectedProduct] = useState<string>(
     isEditing && initialData ? String(initialData.productId) : ''
   )
@@ -125,7 +144,7 @@ export default function InventoryForm({
   const [rackOptions, setRackOptions] = useState<Array<{ id: number; rackCode: string }>>(initialRackOptions)
   const [shelfOptions, setShelfOptions] = useState<Array<{ id: number; shelfCode: string }>>(initialShelfOptions)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products)
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(currentProducts)
   // Initialize with initial data if in editing mode, or initial product ID if provided
   useEffect(() => {
     console.log('InventoryForm init effect running with:', {
@@ -173,27 +192,25 @@ export default function InventoryForm({
           console.log('Setting initial shelf options:', rack.shelves);
           setShelfOptions(rack.shelves);
         }
-      }
-    } else if (initialProductId) {
-      const product = products.find(p => p.id === initialProductId)
+      }    } else if (initialProductId) {
+      const product = currentProducts.find(p => p.id === initialProductId)
       if (product) {
         setSelectedProduct(String(product.id))
         setSelectedUnit(product.primaryUnit)
       }
     }
-  }, [initialData, initialProductId, isEditing, products, warehouses])
-
+  }, [initialData, initialProductId, isEditing, currentProducts, warehouses])
   // Filter products when search query changes
   useEffect(() => {
     const filtered = searchQuery
-      ? products.filter(product => 
+      ? currentProducts.filter(product => 
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.sku.toLowerCase().includes(searchQuery.toLowerCase())
         )
-      : products
+      : currentProducts
     
     setFilteredProducts(filtered)
-  }, [searchQuery, products])  // Update rack options when warehouse changes
+  }, [searchQuery, currentProducts])// Update rack options when warehouse changes
   useEffect(() => {
     console.log('Selected warehouse changed to:', selectedWarehouse)
     
@@ -241,35 +258,78 @@ export default function InventoryForm({
       setShelfOptions([])
       setSelectedShelf('')
     }
-  }, [selectedRack, selectedWarehouse, warehouses, isEditing, initialData])
-  // Set unit when product changes
+  }, [selectedRack, selectedWarehouse, warehouses, isEditing, initialData])  // Set unit when product changes
   useEffect(() => {
     if (selectedProduct) {
-      const product = products.find(p => p.id === Number(selectedProduct))
+      const product = currentProducts.find(p => p.id === Number(selectedProduct))
       if (product) {
         setSelectedUnit(product.primaryUnit)
       }
     } else {
       setSelectedUnit('')
     }
-  }, [selectedProduct, products])
-  
-  // Pre-select the product when initialData is loaded
+  }, [selectedProduct, currentProducts])
+    // Pre-select the product when initialData is loaded
   useEffect(() => {
     if (isEditing && initialData && selectedProduct) {
-      const currentProduct = products.find(p => p.id === Number(selectedProduct))
+      const currentProduct = currentProducts.find(p => p.id === Number(selectedProduct))
       if (!currentProduct && initialData.product) {
         console.log('Product in initialData but not in products list:', initialData.product)
       }
     }
-  }, [isEditing, initialData, selectedProduct, products])
+  }, [isEditing, initialData, selectedProduct, currentProducts])
+  
+  // Handle new product creation
+  const handleProductCreated = (newProduct: Product) => {
+    // Add the new product to the current products list
+    setCurrentProducts(prev => [...prev, newProduct])
+    
+    // Auto-select the newly created product
+    setSelectedProduct(String(newProduct.id))
+    setSelectedUnit(newProduct.primaryUnit)
+    
+    // Close the modal
+    setIsProductModalOpen(false)
+  }
+    const handleProductSelection = (value: string) => {
+    if (value === 'add-new-product') {
+      setIsProductModalOpen(true)
+    } else {
+      console.log("Product selected:", value);
+      setSelectedProduct(value)
+    }
+  }
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setLoading(true)
     setError(null)
     setSuccess(false)
+      // Validate that a product is selected
+    if (!selectedProduct || selectedProduct === '') {
+      setError('Please select a product before adding inventory.')
+      setLoading(false)
+      return
+    }
     
-    const formData = new FormData(event.currentTarget)
+    // Validate that unit is selected (should be set when product is selected)
+    if (!selectedUnit) {
+      setError('Product unit not found. Please try selecting the product again.')
+      setLoading(false)
+      return
+    }
+      const formData = new FormData(event.currentTarget)
+    
+    // Debug logging
+    console.log('Form submission debug:', {
+      selectedProduct,
+      selectedUnit,
+      unitFromForm: formData.get('unit')
+    })
+    
+    // Debug logging
+    console.log('Form data - selectedUnit:', selectedUnit)
+    console.log('Form data - unit field:', formData.get('unit'))
     
     if (expiryDate) {
       formData.set('expiryDate', expiryDate.toISOString().split('T')[0])
@@ -318,9 +378,9 @@ export default function InventoryForm({
       setLoading(false)
     }
   }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -355,13 +415,9 @@ export default function InventoryForm({
                 </div>
               </div>
                 <div>                <Label htmlFor="productId">Product*</Label>                <div>
-                  <input type="hidden" name="productId" value={selectedProduct} />
-                  <Select
+                  <input type="hidden" name="productId" value={selectedProduct} />                  <Select
                     value={selectedProduct}
-                    onValueChange={(value) => {
-                      console.log("Product selected:", value);
-                      setSelectedProduct(value);
-                    }}
+                    onValueChange={handleProductSelection}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select product" />
@@ -383,20 +439,29 @@ export default function InventoryForm({
                           </SelectItem>
                         )}
                       </SelectGroup>
+                      
+                      <SelectGroup>
+                        <SelectLabel>Actions</SelectLabel>
+                        <SelectItem value="add-new-product" className="text-primary font-medium">
+                          <div className="flex items-center">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add New Product
+                          </div>
+                        </SelectItem>
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="quantity">Quantity*</Label>                <Input
                     id="quantity"
                     name="quantity"
                     type="number"
-                    min="0.01"
+                    min="0"
                     step="0.01"
-                    placeholder="Enter quantity"
+                    placeholder="Enter quantity (0 for out of stock)"
                     defaultValue={isEditing && initialData ? initialData.quantity : ''}
                     required
                   />
@@ -569,8 +634,7 @@ export default function InventoryForm({
           </CardContent>
         </Card>
       </div>
-      
-      <div className="flex justify-end">
+        <div className="flex justify-end">
         <Button 
           type="button" 
           variant="outline" 
@@ -580,9 +644,18 @@ export default function InventoryForm({
           Cancel
         </Button>        <Button type="submit" disabled={loading}>
           <Save className="h-4 w-4 mr-2" />
-          {isEditing ? 'Update' : 'Add'} Inventory
-        </Button>
+          {isEditing ? 'Update' : 'Add'} Inventory        </Button>
       </div>
     </form>
+      
+    {/* Product Creation Modal */}
+    <ProductModal
+      isOpen={isProductModalOpen}
+      onClose={() => setIsProductModalOpen(false)}
+      categories={categories}
+      statusTypes={statusTypes}
+      onProductCreated={handleProductCreated}
+    />
+    </>
   )
 }

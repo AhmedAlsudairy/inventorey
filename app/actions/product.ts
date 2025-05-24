@@ -59,9 +59,7 @@ export async function createProduct(formData: FormData) {
       dimensions,
       specifications,
       statusId,
-    });
-
-    await db.product.create({
+    });    const product = await db.product.create({
       data: {
         name: validated.name,
         description: validated.description,
@@ -77,7 +75,15 @@ export async function createProduct(formData: FormData) {
     });
     
     revalidatePath('/dashboard/products');
-    return { success: true };
+    return { 
+      success: true, 
+      product: {
+        id: product.id,
+        name: product.name,
+        sku: product.sku,
+        primaryUnit: product.primaryUnit
+      }
+    };
   } catch (error) {
     console.error('Failed to create product:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Failed to create product' };

@@ -43,15 +43,17 @@ interface InventoryDetailProps {
       name: string
       sku: string
       category: {
-        name: string
+              name: string
       }
     }
     shelf: {
       id: number
       shelfCode: string
+      position: string
       rack: {
         id: number
         rackCode: string
+        location: string
         warehouse: {
           id: number
           name: string
@@ -228,25 +230,74 @@ export default function InventoryDetail({ inventory }: InventoryDetailProps) {
                 </div>
               </CardContent>
             </Card>
-            
-            <Card>
+              <Card>
               <CardHeader>
-                <CardTitle>Location</CardTitle>
+                <CardTitle>Location & Position</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Warehouse</p>
-                  <p className="font-medium">{inventory.shelf.rack.warehouse.name}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
+                  <Link 
+                    href={`/dashboard/warehouses/${inventory.shelf.rack.warehouse.id}`}
+                    className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {inventory.shelf.rack.warehouse.name}
+                  </Link>
+                </div>                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Rack</p>
-                    <p>{inventory.shelf.rack.rackCode}</p>
+                    <Link 
+                      href={`/dashboard/racks/${inventory.shelf.rack.id}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-lg font-medium"
+                    >
+                      {inventory.shelf.rack.rackCode}
+                    </Link>
+                    <div className="mt-2 bg-blue-50 p-2 rounded-md">
+                      <p className="text-sm font-medium text-blue-800">
+                        📍 Location: <span className="font-semibold">{inventory.shelf.rack.location}</span>
+                      </p>
+                    </div>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Shelf</p>
-                    <p>{inventory.shelf.shelfCode}</p>
+                    <Link 
+                      href={`/dashboard/shelves/${inventory.shelf.id}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-lg font-medium"
+                    >
+                      {inventory.shelf.shelfCode}
+                    </Link>
+                    <div className="mt-2 bg-green-50 p-2 rounded-md">
+                      <p className="text-sm font-medium text-green-800">
+                        📋 Position: <span className="font-semibold">{inventory.shelf.position}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                  <div className="pt-4 border-t">
+                  <p className="text-sm font-medium text-muted-foreground mb-3">Full Position Path</p>
+                  <div className="bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg border">
+                    <div className="flex flex-wrap items-center gap-2 text-base">
+                      <Link 
+                        href={`/dashboard/warehouses/${inventory.shelf.rack.warehouse.id}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium bg-white px-3 py-1 rounded-md shadow-sm"
+                      >
+                        🏢 {inventory.shelf.rack.warehouse.name}
+                      </Link>
+                      <span className="mx-1 text-gray-500 font-bold">→</span>
+                      <Link 
+                        href={`/dashboard/racks/${inventory.shelf.rack.id}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium bg-white px-3 py-1 rounded-md shadow-sm"
+                      >
+                        🗂️ Rack {inventory.shelf.rack.rackCode} ({inventory.shelf.rack.location})
+                      </Link>
+                      <span className="mx-1 text-gray-500 font-bold">→</span>
+                      <Link 
+                        href={`/dashboard/shelves/${inventory.shelf.id}`}
+                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium bg-white px-3 py-1 rounded-md shadow-sm"
+                      >
+                        📚 Shelf {inventory.shelf.shelfCode} ({inventory.shelf.position})
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </CardContent>

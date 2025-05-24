@@ -43,9 +43,11 @@ interface Inventory {  id: number;
   shelf: {
     id: number
     shelfCode: string
+    position: string
     rack: {
       id: number
       rackCode: string
+      location: string
       warehouse: {
         id: number
         name: string
@@ -67,15 +69,16 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [inventoryToDelete, setInventoryToDelete] = useState<{ id: number, productName: string } | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-  
-  const filteredInventory = searchQuery
+    const filteredInventory = searchQuery
     ? inventory.filter(item => 
         item.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.product.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (item.product.documentNo && item.product.documentNo.toLowerCase().includes(searchQuery.toLowerCase())) ||
         item.shelf.rack.warehouse.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.shelf.rack.rackCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.shelf.shelfCode.toLowerCase().includes(searchQuery.toLowerCase())
+        item.shelf.shelfCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.shelf.rack.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.shelf.position.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : inventory
 
@@ -130,8 +133,12 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
       day: 'numeric'
     })
   }
-
   const getInventoryStatus = (item: Inventory) => {
+    // Check if quantity is zero first
+    if (item.quantity === 0) {
+      return { label: 'Out of Stock', variant: 'destructive' as const }
+    }
+    
     if (item.expiryDate && new Date(item.expiryDate) < new Date()) {
       return { label: 'Expired', variant: 'destructive' as const }
     }
@@ -144,9 +151,8 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
   return (
     <>      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 sm:py-4 gap-2 sm:gap-0">
         <div className="flex items-center relative w-full sm:w-auto">
-          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search inventory..."
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />          <Input
+            placeholder="Search inventory (product, location, position)..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="pl-9 w-full sm:max-w-sm"
@@ -154,10 +160,9 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
         </div>
       </div>      <div className="rounded-md border overflow-x-auto">
         <Table>
-          <TableHeader>
-            <TableRow>
+          <TableHeader>            <TableRow>
               <TableHead className="whitespace-nowrap">Product Info</TableHead>
-              <TableHead className="whitespace-nowrap hidden sm:table-cell">Location</TableHead>
+              <TableHead className="whitespace-nowrap hidden sm:table-cell">Location (Warehouse → Rack → Shelf)</TableHead>
               <TableHead className="whitespace-nowrap">Quantity</TableHead>
               <TableHead className="whitespace-nowrap hidden md:table-cell">Batch</TableHead>
               <TableHead className="whitespace-nowrap hidden md:table-cell">Expiry</TableHead>
@@ -184,17 +189,70 @@ export default function InventoryTable({ inventory }: InventoryTableProps) {  co
                               Doc: {item.product.documentNo}
                             </span>
                           )}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-1 sm:hidden">
-                          {item.shelf.rack.warehouse.name} &gt; {item.shelf.rack.rackCode} &gt; {item.shelf.shelfCode}
+                        </div>                        <div className="text-xs text-muted-foreground mt-1 sm:hidden">
+                          <div className="flex flex-wrap gap-1 items-center">
+                            <Link 
+                              href={`/dashboard/warehouses/${item.shelf.rack.warehouse.id}`}
+                              className="hover:underline text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded font-medium"
+                            >
+                              🏢 {item.shelf.rack.warehouse.name}
+                            </Link>
+                            <span>→</span>
+                            <Link 
+                              href={`/dashboard/racks/${item.shelf.rack.id}`}
+                              className="hover:underline hover:text-gray-700 bg-gray-50 px-2 py-1 rounded"
+                            >
+                              🗂️ {item.shelf.rack.rackCode}
+                            </Link>
+                            <span>→</span>
+                            <Link 
+                              href={`/dashboard/shelves/${item.shelf.id}`}
+                              className="hover:underline hover:text-gray-700 bg-gray-50 px-2 py-1 rounded"
+                            >
+                              📚 {item.shelf.shelfCode}
+                            </Link>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">
+                              📍 {item.shelf.rack.location}
+                            </span>
+                            <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">
+                              📋 {item.shelf.position}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell p-2 sm:p-4">
+                    </TableCell>                    <TableCell className="hidden sm:table-cell p-2 sm:p-4">
                       <div>
-                        <div>{item.shelf.rack.warehouse.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {item.shelf.rack.rackCode} &gt; {item.shelf.shelfCode}
+                        <div className="flex flex-wrap gap-1 items-center mb-2">
+                          <Link 
+                            href={`/dashboard/warehouses/${item.shelf.rack.warehouse.id}`}
+                            className="hover:underline font-medium text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded text-sm"
+                          >
+                            🏢 {item.shelf.rack.warehouse.name}
+                          </Link>
+                          <span className="text-gray-400">→</span>
+                          <Link 
+                            href={`/dashboard/racks/${item.shelf.rack.id}`}
+                            className="hover:underline hover:text-gray-700 bg-gray-50 px-2 py-1 rounded text-sm"
+                          >
+                            🗂️ {item.shelf.rack.rackCode}
+                          </Link>
+                          <span className="text-gray-400">→</span>
+                          <Link 
+                            href={`/dashboard/shelves/${item.shelf.id}`}
+                            className="hover:underline hover:text-gray-700 bg-gray-50 px-2 py-1 rounded text-sm"
+                          >
+                            📚 {item.shelf.shelfCode}
+                          </Link>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-medium">
+                            📍 Location: {item.shelf.rack.location}
+                          </span>
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+                            📋 Position: {item.shelf.position}
+                          </span>
                         </div>
                       </div>
                     </TableCell>

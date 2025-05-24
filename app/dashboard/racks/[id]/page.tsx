@@ -87,9 +87,25 @@ async function RackDetails({ id }: { id: number }) {
       default: return "bg-red-100 text-red-800";
     }
   };
-
   return (
     <div className="grid gap-6">
+      {/* Location Overview Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>Location Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href={`/dashboard/warehouses/${rack.warehouseId}`} className="hover:underline font-medium">
+              {rack.warehouse.name}
+            </Link>
+            <span>→</span>
+            <span className="font-medium">Rack {rack.rackCode}</span>
+            <span>({rack.location})</span>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Rack info card */}
       <Card>
         <CardHeader className="pb-3">
@@ -102,7 +118,7 @@ async function RackDetails({ id }: { id: number }) {
               <p className="text-lg">{rack.rackCode}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Location</p>
+              <p className="text-sm font-medium text-muted-foreground">Location within Warehouse</p>
               <p className="text-lg">{rack.location}</p>
             </div>
             <div>
@@ -113,7 +129,7 @@ async function RackDetails({ id }: { id: number }) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Warehouse</p>
-              <Link href={`/dashboard/warehouses/${rack.warehouseId}`} className="text-lg hover:underline">
+              <Link href={`/dashboard/warehouses/${rack.warehouseId}`} className="text-lg hover:underline text-blue-600">
                 {rack.warehouse.name}
               </Link>
             </div>
@@ -127,7 +143,7 @@ async function RackDetails({ id }: { id: number }) {
             </div>
           </div>
         </CardContent>
-      </Card>      {/* Shelves list */}
+      </Card>{/* Shelves list */}
       <Card>
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle>Shelves</CardTitle>

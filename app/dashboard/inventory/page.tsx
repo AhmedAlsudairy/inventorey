@@ -2,12 +2,14 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { getInventory } from '@/app/actions/inventory'
 import InventoryTable from '@/components/inventory/InventoryTable'
+import InventoryFilters from '@/components/inventory/InventoryFilters'
 import { Button } from '@/components/ui/button'
 import { Plus, PackageOpen } from 'lucide-react'
 
 export type SearchParamsType = Promise<{
   productId?: string
   shelfId?: string
+  rackId?: string
 }>;
 
 interface PageProps {
@@ -19,8 +21,7 @@ export default async function InventoryPage({
 }: PageProps) {
   // Await and resolve the searchParams Promise
   const resolvedSearchParams = await searchParams
-  
-  // Convert IDs to numbers if provided
+    // Convert IDs to numbers if provided
   const productId = resolvedSearchParams.productId
     ? parseInt(resolvedSearchParams.productId)
     : undefined
@@ -29,7 +30,11 @@ export default async function InventoryPage({
     ? parseInt(resolvedSearchParams.shelfId)
     : undefined
     
-  const inventory = await getInventory(productId, shelfId)
+  const rackId = resolvedSearchParams.rackId
+    ? parseInt(resolvedSearchParams.rackId)
+    : undefined
+    
+  const inventory = await getInventory(productId, shelfId, rackId)
     
   return (
     <div className="container mx-auto py-6">
@@ -45,8 +50,9 @@ export default async function InventoryPage({
             <Plus className="mr-2 h-4 w-4" />
             Add Inventory
           </Link>
-        </Button>
-      </div>
+        </Button>      </div>
+        
+      <InventoryFilters />
         
       <Suspense fallback={<div className="py-8 text-center">Loading inventory...</div>}>
         {inventory.length === 0 ? (

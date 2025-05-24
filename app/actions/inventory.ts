@@ -102,14 +102,18 @@ export async function addInventory(formData: FormData) {
   }
 }
 
-export async function getInventory(productId?: number, shelfId?: number) {
+export async function getInventory(productId?: number, shelfId?: number, rackId?: number) {
   const { userId } = await auth();
   if (!userId) {
     throw new Error("Not authenticated");
   }
   
   try {
-    const whereClause: { productId?: number, shelfId?: number } = {};
+    const whereClause: { 
+      productId?: number; 
+      shelfId?: number;
+      shelf?: { rackId?: number };
+    } = {};
     
     if (productId !== undefined) {
       whereClause.productId = productId;
@@ -117,6 +121,10 @@ export async function getInventory(productId?: number, shelfId?: number) {
     
     if (shelfId !== undefined) {
       whereClause.shelfId = shelfId;
+    }
+    
+    if (rackId !== undefined) {
+      whereClause.shelf = { rackId };
     }
       return await db.inventory.findMany({
       where: whereClause,
@@ -138,15 +146,16 @@ export async function getInventory(productId?: number, shelfId?: number) {
               }
             }
           }
-        },
-        shelf: {
+        },        shelf: {
           select: {
             id: true,
             shelfCode: true,
+            position: true,
             rack: {
               select: {
                 id: true,
                 rackCode: true,
+                location: true,
                 warehouse: {
                   select: {
                     id: true,
@@ -190,18 +199,19 @@ export async function getInventoryDetail(id: number) {
             category: {
               select: {
                 name: true,
-              }
-            }
+              }            }
           }
         },
         shelf: {
           select: {
             id: true,
             shelfCode: true,
+            position: true,
             rack: {
               select: {
                 id: true,
                 rackCode: true,
+                location: true,
                 warehouse: {
                   select: {
                     id: true,

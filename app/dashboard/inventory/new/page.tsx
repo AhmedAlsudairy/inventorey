@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getProducts } from '@/app/actions/product'
+import { getProducts, getCategories, getProductStatusTypes } from '@/app/actions/product'
 import { getWarehousesWithRacksAndShelves } from '@/app/actions/warehouse'
 import InventoryForm from '@/components/inventory/InventoryForm'
 import { Button } from '@/components/ui/button'
@@ -22,10 +22,11 @@ export default async function NewInventoryPage({
   const initialProductId = resolvedSearchParams.productId 
     ? parseInt(resolvedSearchParams.productId) 
     : undefined
-  
-  const [products, warehouses] = await Promise.all([
+    const [products, warehouses, categories, statusTypes] = await Promise.all([
     getProducts(),
     getWarehousesWithRacksAndShelves(),
+    getCategories(),
+    getProductStatusTypes(),
   ])
   
   return (
@@ -47,10 +48,11 @@ export default async function NewInventoryPage({
           Add products to your inventory
         </p>
       </div>
-      
-      <InventoryForm 
+        <InventoryForm 
         products={products}
         warehouses={warehouses}
+        categories={categories}
+        statusTypes={statusTypes}
         initialProductId={initialProductId}
       />
     </div>

@@ -1,5 +1,5 @@
 // app/dashboard/inventory/[id]/edit/page.tsx
-import { getProducts } from "@/app/actions/product";
+import { getProducts, getCategories, getProductStatusTypes } from "@/app/actions/product";
 import { getWarehousesWithRacksAndShelves } from "@/app/actions/warehouse";
 import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
@@ -42,10 +42,13 @@ export default async function EditInventoryPage({ params }: EditInventoryPagePro
       ? inventory.expiryDate.toISOString().split('T')[0] 
       : inventory.expiryDate
   };
-  
-  // Fetch required data for the form
-  const products = await getProducts();
-  const warehouses = await getWarehousesWithRacksAndShelves();
+    // Fetch required data for the form
+  const [products, warehouses, categories, statusTypes] = await Promise.all([
+    getProducts(),
+    getWarehousesWithRacksAndShelves(),
+    getCategories(),
+    getProductStatusTypes(),
+  ])
   
   return (
     <div className="container mx-auto py-6">
@@ -55,10 +58,11 @@ export default async function EditInventoryPage({ params }: EditInventoryPagePro
         backUrl={`/dashboard/inventory/${inventoryId}`}
       />
       
-      <div className="mt-6">
-        <InventoryForm 
+      <div className="mt-6">        <InventoryForm 
           products={products}
           warehouses={warehouses}
+          categories={categories}
+          statusTypes={statusTypes}
           initialData={formattedInventory}
           isEditing={true}
         />

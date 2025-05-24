@@ -97,9 +97,29 @@ async function ShelfDetails({ id }: { id: number }) {
       default: return "bg-red-100 text-red-800";
     }
   };
-
   return (
     <div className="grid gap-6">
+      {/* Location Overview Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>Location Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href={`/dashboard/warehouses/${shelf.rack.warehouseId}`} className="hover:underline font-medium">
+              {shelf.rack.warehouse.name}
+            </Link>
+            <span>→</span>
+            <Link href={`/dashboard/racks/${shelf.rackId}`} className="hover:underline font-medium">
+              Rack {shelf.rack.rackCode}
+            </Link>
+            <span>→</span>
+            <span className="font-medium">Shelf {shelf.shelfCode}</span>
+            <span>({shelf.position})</span>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Shelf info card */}
       <Card>
         <CardHeader className="pb-3">
@@ -112,7 +132,7 @@ async function ShelfDetails({ id }: { id: number }) {
               <p className="text-lg">{shelf.shelfCode}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Position</p>
+              <p className="text-sm font-medium text-muted-foreground">Position on Rack</p>
               <p className="text-lg">{shelf.position}</p>
             </div>
             <div>
@@ -123,13 +143,13 @@ async function ShelfDetails({ id }: { id: number }) {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Rack</p>
-              <Link href={`/dashboard/racks/${shelf.rackId}`} className="text-lg hover:underline">
-                {shelf.rack.rackCode}
+              <Link href={`/dashboard/racks/${shelf.rackId}`} className="text-lg hover:underline text-blue-600">
+                {shelf.rack.rackCode} ({shelf.rack.location})
               </Link>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Warehouse</p>
-              <Link href={`/dashboard/warehouses/${shelf.rack.warehouseId}`} className="text-lg hover:underline">
+              <Link href={`/dashboard/warehouses/${shelf.rack.warehouseId}`} className="text-lg hover:underline text-blue-600">
                 {shelf.rack.warehouse.name}
               </Link>
             </div>
@@ -143,7 +163,7 @@ async function ShelfDetails({ id }: { id: number }) {
             </div>
           </div>
         </CardContent>
-      </Card>      {/* Inventory items list */}
+      </Card>{/* Inventory items list */}
       <Card>
         <CardHeader className="pb-3 flex flex-row items-center justify-between">
           <CardTitle>Inventory Items</CardTitle>
