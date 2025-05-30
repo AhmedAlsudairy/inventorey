@@ -32,12 +32,11 @@ export function DatePicker({ date, setDate, className, id }: DatePickerProps) {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
+      <PopoverTrigger asChild>        <Button
           id={id}
           variant="outline"
           className={cn(
-            "w-full justify-start text-left font-normal",
+            "w-full justify-start text-left font-normal bg-background/80 backdrop-blur-sm border-white/20 hover:bg-background/90 hover:border-primary/30 transition-all duration-200 rounded-xl h-11 px-4",
             !date && "text-muted-foreground",
             className
           )}
@@ -46,7 +45,7 @@ export function DatePicker({ date, setDate, className, id }: DatePickerProps) {
           {displayDate === 'Pick a date' ? <span>Pick a date</span> : displayDate}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 bg-background/95 backdrop-blur-xl border-white/20 rounded-2xl shadow-2xl" align="start">
         <Calendar
           mode="single"
           selected={date}

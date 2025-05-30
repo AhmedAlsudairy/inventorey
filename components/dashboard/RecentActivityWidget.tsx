@@ -35,14 +35,14 @@ const getTransactionDescription = (activity: RecentActivityType) => {
 
 export function RecentActivityWidget({ activities }: { activities: RecentActivityType[] }) {
   return (
-    <Card className="col-span-1 lg:col-span-2">
-      <CardHeader>
-        <CardTitle className="flex items-center">
+    <Card className="col-span-1 lg:col-span-2 !bg-white/90 !backdrop-blur-xl !rounded-3xl !border-white/30 !p-6 sm:!p-8 !shadow-xl !shadow-black/5 hover:!shadow-2xl hover:!shadow-black/10 !transition-all !duration-300">
+      <CardHeader className="!p-0 !pb-6">
+        <CardTitle className="flex items-center text-lg font-semibold">
           <Activity className="mr-2 h-5 w-5" />
           Recent Activity
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="!p-0">
         {activities.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
             No recent activity to display.

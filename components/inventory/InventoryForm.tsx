@@ -188,10 +188,9 @@ export default function InventoryForm({
       isEditing,
       hasInitialData: !!initialData
     })
-    
-    if (isEditing && initialData) {
+      if (isEditing && initialData) {
       console.log('Initial data for edit:', initialData)
-      console.log('Products available:', products)
+      console.log('Products available:', currentProducts)
       console.log('Product ID from initialData:', initialData.productId)
       console.log('Product from initialData:', initialData.product)
       console.log('Warehouse from initialData:', initialData.shelf?.rack?.warehouse)

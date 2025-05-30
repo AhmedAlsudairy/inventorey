@@ -64,24 +64,30 @@ export function Sidebar() {
   const pathname = usePathname();
   
   return (
-    <div className="hidden md:flex flex-col h-full w-64 border-r bg-background">
-      <div className="flex items-center h-14 ps-6 border-b">
-        <span className="text-lg font-semibold">Inventory System</span>
+    <div className="hidden md:flex flex-col h-full w-64 glass-effect border-r border-white/20">
+      <div className="flex items-center h-16 px-6 border-b border-white/10">
+        <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          Inventory System
+        </span>
       </div>
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 space-y-2">
         <ul className="space-y-1">
           {sidebarItems.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 group ${
                   pathname === item.href || pathname.startsWith(`${item.href}/`)
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted"
+                    ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                    : "text-gray-600 hover:bg-white/60 hover:text-indigo-600 hover:shadow-md hover:transform hover:scale-105"
                 }`}
               >
-                <item.icon className="h-4 w-4" />
-                <span>{item.name}</span>
+                <item.icon className={`h-5 w-5 transition-transform duration-300 ${
+                  pathname === item.href || pathname.startsWith(`${item.href}/`)
+                    ? "text-white"
+                    : "text-gray-500 group-hover:text-indigo-500 group-hover:scale-110"
+                }`} />
+                <span className="font-medium">{item.name}</span>
               </Link>
             </li>
           ))}

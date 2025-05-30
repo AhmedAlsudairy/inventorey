@@ -44,38 +44,38 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --radius: 0.75rem;
+  --background: linear-gradient(135deg, oklch(0.98 0.02 240) 0%, oklch(0.96 0.03 300) 100%);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(1 0 0 / 0.85);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(1 0 0 / 0.95);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: linear-gradient(135deg, oklch(0.35 0.25 240) 0%, oklch(0.45 0.3 270) 100%);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.95 0.02 240 / 0.8);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: oklch(0.96 0.02 240 / 0.6);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --accent: linear-gradient(135deg, oklch(0.9 0.05 240) 0%, oklch(0.92 0.03 270) 100%);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --destructive: linear-gradient(135deg, oklch(0.577 0.245 27.325) 0%, oklch(0.62 0.28 15) 100%);
+  --border: oklch(0.9 0.02 240 / 0.3);
+  --input: oklch(0.98 0.01 240 / 0.8);
+  --ring: oklch(0.45 0.3 270 / 0.6);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.97 0.02 240 / 0.95);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary: linear-gradient(135deg, oklch(0.35 0.25 240) 0%, oklch(0.45 0.3 270) 100%);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent: oklch(0.94 0.02 240 / 0.8);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: oklch(0.9 0.02 240 / 0.2);
+  --sidebar-ring: oklch(0.45 0.3 270 / 0.4);
 }
 
 .dark {
@@ -119,4 +119,875 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Enhanced Visual Design System */
+
+/* Beautiful gradient backgrounds */
+body {
+  background: linear-gradient(135deg, hsl(240, 30%, 98%) 0%, hsl(270, 20%, 96%) 50%, hsl(300, 25%, 97%) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Enhanced animations and transitions */
+* {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass morphism effects */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced card styling */
+[data-slot="card"] {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 
+              0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1.5rem; /* Default bottom margin to prevent sticking */
+  border-radius: 1.5rem; /* More rounded edges */
+  min-height: 120px; /* Consistent minimum height */
+}
+
+[data-slot="card"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+              0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced button styles */
+.btn-gradient {
+  background: linear-gradient(135deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, hsl(240, 55%, 60%) 0%, hsl(270, 65%, 70%) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+}
+
+/* Enhanced primary button */
+button[data-variant="default"], 
+.bg-primary {
+  background: linear-gradient(135deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%) !important;
+  border: none;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button[data-variant="default"]:hover,
+.bg-primary:hover {
+  background: linear-gradient(135deg, hsl(240, 55%, 60%) 0%, hsl(270, 65%, 70%) 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+}
+
+/* Enhanced form inputs */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"],
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: hsl(240, 50%, 55%);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  outline: none;
+}
+
+/* Enhanced form validation states */
+input:invalid,
+textarea:invalid,
+select:invalid {
+  border-color: hsl(var(--destructive)) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+input:valid:not(:placeholder-shown),
+textarea:valid:not(:placeholder-shown),
+select:valid:not(:placeholder-shown) {
+  border-color: hsl(142, 76%, 36%) !important;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1) !important;
+}
+
+/* Enhanced table styling */
+table {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+thead {
+  background: linear-gradient(135deg, hsl(240, 30%, 95%) 0%, hsl(270, 25%, 93%) 100%);
+}
+
+tbody tr:hover {
+  background: rgba(99, 102, 241, 0.05);
+  transform: scale(1.001);
+}
+
+/* Enhanced navigation */
+nav a {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+}
+
+nav a:hover {
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateX(4px);
+}
+
+nav a.active {
+  background: linear-gradient(135deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced sidebar */
+.sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced modal and dialog */
+[data-slot="dialog-content"],
+[data-slot="sheet-content"] {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced badges */
+.badge {
+  background: linear-gradient(135deg, hsl(240, 30%, 90%) 0%, hsl(270, 25%, 88%) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-weight: 500;
+}
+
+/* Enhanced progress bars */
+.progress-bar {
+  background: linear-gradient(90deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, hsl(240, 50%, 70%) 0%, hsl(270, 60%, 80%) 100%);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, hsl(240, 55%, 65%) 0%, hsl(270, 65%, 75%) 100%);
+}
+
+/* Enhanced loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.2) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Enhanced loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced tooltip styling */
+[data-radix-tooltip-content] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: white !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Enhanced selection styling */
+::selection {
+  background: hsl(240, 50%, 55%);
+  color: white;
+}
+
+::-moz-selection {
+  background: hsl(240, 50%, 55%);
+  color: white;
+}
+
+/* Enhanced text rendering */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced component hover states */
+[data-slot="card"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-slot="button"]:hover {
+  transform: translateY(-1px);
+}
+
+[data-slot="button"]:active {
+  transform: translateY(0);
+}
+
+/* Enhanced tabs styling */
+[data-slot="tabs-trigger"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-slot="tabs-trigger"]:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+[data-slot="tabs-trigger"][data-state="active"] {
+  background: linear-gradient(135deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced navigation styling */
+.nav-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+  transform: translateX(4px);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, hsl(240, 50%, 55%) 0%, hsl(270, 60%, 65%) 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+/* Enhanced status indicators */
+.status-indicator {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Enhanced image styling */
+img {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+img:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Enhanced code styling */
+code {
+  background: rgba(99, 102, 241, 0.1);
+  color: hsl(240, 50%, 55%);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+/* Enhanced print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  [data-slot="card"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* Enhanced dark mode improvements */
+.dark {
+  /* Enhanced scrollbar for dark mode */
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+
+.dark input,
+.dark textarea,
+.dark select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: hsl(240, 50%, 55%);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.dark [data-slot="card"] {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark [data-slot="card"]:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Enhanced responsive text scaling */
+@media (max-width: 640px) {
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
+  }
+  
+  .heading-responsive {
+    font-size: clamp(1.25rem, 5vw, 1.875rem);
+  }
+}
+
+/* Enhanced loading skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite ease-in-out;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  [data-slot="card"] {
+    border-width: 2px !important;
+  }
+  
+  [data-slot="button"] {
+    border-width: 2px !important;
+  }
+}
+
+/* Enhanced spacing utilities for better visual hierarchy */
+.space-y-responsive > * + * {
+  margin-top: clamp(0.5rem, 2vw, 1rem);
+}
+
+.gap-responsive {
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Enhanced visual feedback for interactions */
+.interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.interactive:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.interactive:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+/* Enhanced component states */
+.state-loading {
+  pointer-events: none;
+  opacity: 0.7;
+  filter: grayscale(0.5);
+}
+
+.state-success {
+  border-color: hsl(142, 76%, 36%) !important;
+  background: rgba(34, 197, 94, 0.1) !important;
+}
+
+.state-error {
+  border-color: hsl(var(--destructive)) !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.state-warning {
+  border-color: hsl(38, 92%, 50%) !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Dashboard layout fixes */
+.dashboard-container {
+  container: dashboard / inline-size;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  contain: layout style;
+  min-height: 160px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 1.5rem !important;
+  padding: 1.5rem !important;
+}
+
+/* Transparent metric cards for seamless container integration */
+.metric-card.bg-transparent,
+.metric-card[class*="bg-transparent"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+.metric-card.bg-transparent:hover,
+.metric-card[class*="bg-transparent"]:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.metric-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  flex-shrink: 0;
+  padding: 0 !important;
+  margin-bottom: 1rem;
+}
+
+.metric-card .card-content {
+  position: relative;
+  z-index: 1;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+/* Fix grid overflow issues */
+[class*="grid-cols"] {
+  overflow-x: hidden;
+}
+
+.grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Ensure icons stay within cards */
+.card-header > div[class*="rounded"] {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* Enhanced responsiveness for dashboard cards */
+@media (min-width: 768px) {
+  .metric-card {
+    min-height: 120px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .metric-card {
+    min-height: 140px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .metric-card {
+    min-height: 160px;
+  }
+}
+
+/* Enhanced card container spacing */
+.dashboard-container {
+  padding: 0 1rem;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (min-width: 640px) {
+  .dashboard-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-container {
+    padding: 0 2rem;
+  }
+}
+
+/* Card spacing and layout improvements */
+.metric-card {
+  min-height: 120px;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.metric-card .card-header {
+  overflow: hidden;
+}
+
+.metric-card .card-content {
+  overflow: hidden;
+}
+
+/* Grid container spacing */
+.dashboard-grid {
+  gap: 1rem;
+  margin: 0 -0.5rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard-grid {
+    gap: 1.5rem;
+    margin: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    gap: 2rem;
+  }
+}
+
+/* Section spacing */
+.dashboard-section {
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard-section {
+    margin-bottom: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-section {
+    margin-bottom: 3rem;
+  }
+}
+
+/* Prevent icon overflow in cards */
+[data-slot="card-header"] {
+  position: relative;
+  overflow: visible;
+}
+
+[data-slot="card-header"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure icons stay within card boundaries */
+.metric-card [data-slot="card-header"] .rounded-xl {
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Enhanced Card Spacing and Layout */
+[data-slot="card"] {
+  margin-bottom: 1.5rem;
+}
+
+/* Card spacing within grids */
+.grid [data-slot="card"] {
+  margin-bottom: 0;
+}
+
+/* Card spacing within flex containers */
+.flex [data-slot="card"] {
+  margin-bottom: 0;
+}
+
+/* Card spacing within specific layouts */
+.space-y-6 > [data-slot="card"],
+.space-y-8 > [data-slot="card"],
+.space-y-4 > [data-slot="card"] {
+  margin-bottom: 0;
+}
+
+/* General card container spacing */
+.card-container {
+  margin: 1rem 0;
+}
+
+.card-container:first-child {
+  margin-top: 0;
+}
+
+.card-container:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced card spacing for different sections */
+.dashboard-cards {
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  [data-slot="card"] {
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-cards {
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-slot="card"] {
+    margin-bottom: 2.5rem;
+  }
+  
+  .dashboard-cards {
+    gap: 2.5rem;
+  }
+}
+
+/* Card spacing for page layouts */
+.page-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .page-cards {
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-cards {
+    gap: 2.5rem;
+  }
+}
+
+/* Card margin utilities */
+.card-margin-sm [data-slot="card"] {
+  margin-bottom: 1rem;
+}
+
+.card-margin-md [data-slot="card"] {
+  margin-bottom: 1.5rem;
+}
+
+.card-margin-lg [data-slot="card"] {
+  margin-bottom: 2rem;
+}
+
+.card-margin-xl [data-slot="card"] {
+  margin-bottom: 2.5rem;
+}
+
+/* Remove bottom margin from last card in container */
+.card-container [data-slot="card"]:last-child,
+.card-grid [data-slot="card"]:last-child,
+.dashboard-grid [data-slot="card"]:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced card spacing for specific layouts */
+.dashboard-metrics [data-slot="card"] {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-widgets [data-slot="card"] {
+  margin-bottom: 2rem;
+}
+
+/* Card spacing for mobile */
+@media (max-width: 640px) {
+  [data-slot="card"] {
+    margin-bottom: 1rem;
+  }
+  
+  .card-margin-lg [data-slot="card"],
+  .card-margin-xl [data-slot="card"] {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Enhanced Card Consistency and Sizing */
+[data-slot="card"] {
+  border-radius: 1.5rem !important;
+  min-height: 120px;
+  padding: 1.5rem !important;
+  box-sizing: border-box;
+}
+
+/* Ensure all cards have consistent padding and spacing */
+[data-slot="card-header"] {
+  padding: 0 !important;
+  margin-bottom: 1rem;
+}
+
+[data-slot="card-content"] {
+  padding: 0 !important;
+}
+
+/* Enhanced metric cards for dashboard */
+.metric-card {
+  min-height: 160px !important;
+  max-height: 200px;
+  width: 100%;
+}
+
+/* Responsive card sizing */
+@media (min-width: 640px) {
+  [data-slot="card"] {
+    min-height: 140px;
+    padding: 2rem !important;
+  }
+  
+  .metric-card {
+    min-height: 180px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-slot="card"] {
+    min-height: 160px;
+    padding: 2.5rem !important;
+  }
+  
+  .metric-card {
+    min-height: 200px !important;
+  }
+}
+
+/* Enhanced rounded corners for all card elements */
+[data-slot="card"],
+.card,
+.metric-card {
+  border-radius: 1.5rem !important;
+  overflow: hidden;
+}
+
+/* Card hover effects with consistent styling */
+[data-slot="card"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 
+              0 8px 16px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
 }

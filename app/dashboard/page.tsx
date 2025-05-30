@@ -81,47 +81,63 @@ export default async function DashboardPage() {
           totalInventoryItems: 0,
           uniqueProductCount: 0,
           warehousesWithInventory: 0,
-        };
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-          Dashboard
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Welcome to the Inventory Management System dashboard.
-        </p>{" "}
-      </div>
+        };  return (
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <div className="space-y-8 sm:space-y-10 py-6 sm:py-8">
+        {/* Dashboard Header */}
+        <div className="text-center py-6 sm:py-8 mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+            Welcome to your advanced Inventory Management System dashboard.
+          </p>
+        </div>
 
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        {summaryCards.map((card) => (
-          <Card key={card.title}>
-            {" "}
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">
-                {card.title}
-              </CardTitle>
-              <div className={`rounded-full p-2 ${card.color}`}>
-                <card.icon className="h-4 w-4 text-white" />
-              </div>
-            </CardHeader>{" "}
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold">{card.value}</div>
-              <p className="text-xs text-muted-foreground leading-tight">
-                {card.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        {/* Summary Cards Section */}
+        <div className="dashboard-section dashboard-metrics">
+          <div className="grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 card-container">
+            {summaryCards.map((card, index) => (
+              <Card key={card.title} className={`metric-card hover:border-indigo-200 group cursor-pointer transition-all duration-300 delay-${index * 100}`}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600 group-hover:text-indigo-600 transition-colors">
+                    {card.title}
+                  </CardTitle>
+                  <div className={`rounded-xl p-3 ${card.color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <card.icon className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors">
+                    {card.value}
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-tight mt-1">
+                    {card.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
 
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-3">
-        <InventoryMetricsWidget metrics={inventoryMetrics} />
-      </div>
+        {/* Inventory Metrics Section */}
+        <div className="dashboard-section dashboard-widgets">
+          <div className="px-2 sm:px-0">
+            <InventoryMetricsWidget metrics={inventoryMetrics} />
+          </div>
+        </div>
 
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <RecentActivityWidget activities={recentActivities} />
-        <LowStockWidget products={lowStockProducts} />
+        {/* Widgets Section */}
+        <div className="dashboard-section dashboard-widgets">
+          <div className="grid gap-6 sm:gap-8 lg:gap-10 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 card-container">
+            <div className="lg:col-span-1 xl:col-span-2 px-2 sm:px-0">
+              <RecentActivityWidget activities={recentActivities} />
+            </div>
+            <div className="lg:col-span-1 xl:col-span-1 px-2 sm:px-0">
+              <LowStockWidget products={lowStockProducts} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
